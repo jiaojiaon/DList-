@@ -1,0 +1,224 @@
+class DList implements Iterable<String> {
+    private static class DListNode<String> {
+        public String data;
+        public DListNode next;
+        public DListNode previous;
+
+        public String getData() {
+            return data;
+        }
+
+        public void setData(String data) {
+            this.data = data;
+        }
+
+        public DListNode getNext() {
+            return next;
+        }
+
+        public void setNext(DListNode next) {
+            this.next = next;
+        }
+
+        public DListNode getPrevious() {
+            return previous;
+        }
+
+        public void setPrevious(DListNode previous) {
+            this.previous = previous;
+        }
+    }
+
+    private DListNode nil;
+    private int numElements;
+
+
+    // this creates the empty list
+    public DList() {
+        nil = new DListNode<>();
+        nil.previous = null;
+        nil.next = null;
+        nil.data = null;
+        numElements = 0;
+    }
+
+    //adds elem to the front of the list
+    public void addFirst(String elem) {
+        DListNode newHead = new DListNode<>();
+        newHead.data = elem;
+        newHead.previous = null;
+        newHead.next = nil.next;
+        if (nil.next == null) {
+            nil.next = newHead;
+            nil.previous = newHead;
+        } else {
+            newHead.setNext(nil.next);
+            nil.next.setPrevious(newHead);
+            nil.next = newHead;
+        }
+        numElements++;
+    }
+
+    //adds elem to the end of the list
+    public void addLast(String elem) {
+        DListNode newTail = new DListNode<>();
+        newTail.data = elem;
+        newTail.next = null;
+        newTail.previous = nil.previous;
+
+        if (nil.next == null) {
+            nil.next = newTail;
+            nil.previous = newTail;
+        } else {
+            newTail.setPrevious(nil.previous);
+            nil.previous.setNext(newTail);
+            nil.previous = newTail;
+        }
+        numElements++;
+    }
+
+    public String getFirst() {
+        if (nil.next == null)
+            throw new NoSuchElementException();
+        return (String)nil.next.getData();
+    }
+
+    public String getLast() {
+        if (nil.next == null)
+            throw new NoSuchElementException();
+        return (String)nil.previous.getData();
+    }
+
+    private DListNode marchToIndex(int index) {
+        if (index < 0 || index >= size())
+            throw new IndexOutOfBoundsException();
+
+        int count = 0;
+        DListNode temp = nil.next;
+
+        while (count < index) {
+            count++;
+            temp = temp.getNext();
+        }
+        return temp;
+    }
+
+
+    // removes the front elem of the list and returns it
+    public String removeFirst() {
+        if (nil.next == null)
+            throw new NoSuchElementException();
+        String answer = (String)nil.next.getData();
+        nil.next = nil.next.getNext();
+
+        if (nil.next != null) nil.setPrevious(nil);
+        else {
+            nil.previous = nil;
+        }
+        numElements--;
+        return answer;
+    }
+
+    // removes the last element of the list and return it
+    public String removeLast() {
+        if (nil.next == null)
+            throw new NoSuchElementException();
+
+        String answer = (String)nil.previous.getData();
+        nil.previous = nil.previous.getPrevious();
+
+        if (nil.previous != null) {
+            nil.previous.setNext(nil);
+        } else {
+            nil.next = nil;
+        }
+        numElements--;
+        return answer;
+    }
+
+    //Returns the value at “position” index. An IndexOutOfBoundsException should be thrown if the index doesn’t exist.
+    public String get(int index) {
+        if (index < 0 || index >= size())
+            throw new IndexOutOfBoundsException();
+
+        return (String)marchToIndex(index).getData();
+    }
+
+    //changes the value at “position” index and returns the old value. AnIndexOutOfBoundsException should be thrown if the index doesn’t exist.
+    public String set(int index, String value) {
+        if (index < 0 || index >= size())
+            throw new IndexOutOfBoundsException();
+
+        DListNode iter = marchToIndex(index);
+        String old = (String) iter.getData();
+        iter.setData(value);
+        return old;
+    }
+
+    //Return true if obj appears in the list and false otherwise
+    public boolean contains(Object obj) {
+        return indexOf(obj) != -1;
+    }
+
+    //return size
+    public int size() {
+        return numElements;
+    }
+
+
+
+    //Returns the index of obj if it is in the list and -1 otherwise.
+    public int indexOf(Object obj) {
+        int index = 0;
+        DListNode iter = nil.next;
+        while (iter != null) {
+            if (iter.getData().equals(obj)) {
+                return index;
+            }
+            index++;
+            iter = iter.getNext();
+        }
+        return -1;
+    }
+
+    //Returns an iterator over the list. This should be a non static inner class and should work like the one that we described in class.
+    @Override
+    public Iterator<String> iterator() {
+        return new DListIterator();
+    }
+
+    public class DListIterator implements Iterator<String> {
+        private DListNode pointer;
+
+        public DListIterator() {
+            pointer = nil.next;
+        }
+
+        @Override
+        public String next() {
+            String old = (String) pointer.getData();
+            pointer = pointer.getNext();
+            return old;
+        }
+
+        @Override
+        public boolean hasNext() {
+            return pointer != null;
+        }
+
+        @Override
+        public void remove() {
+            throw new UnsupportedOperationException();
+        }
+    }
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("[ ");
+
+            for (String e : this)
+                sb.append(e + " ");
+            sb.append("]");
+            return sb.toString();
+        }
+}
