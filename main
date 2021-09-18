@@ -1,0 +1,17 @@
+class Main {
+    public static void main(String[] args) {
+        DList list = new DList();
+        list.addFirst("one");
+        list.addFirst("two");
+        list.addFirst("three");
+        System.out.println("Print list " + list.toString());
+        System.out.println("The size of the list is " + list.size());
+        System.out.println("Get last " + list.getLast());
+        list.removeLast();
+        System.out.println("The size after remove " + list.size());
+        list.addLast("four");
+        System.out.println("List after add four:" + list.toString());
+        list.removeFirst();
+        System.out.println("List after remove first: " + list.toString());
+    }
+}
